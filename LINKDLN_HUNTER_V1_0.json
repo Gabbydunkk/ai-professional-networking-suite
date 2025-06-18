@@ -1,0 +1,382 @@
+{
+  "name": "LINKDLN HUNTER V1.0",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "29b7a24a-ff51-4ab5-b4e5-19a689fb52a9",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "7414ef10-99ac-4fa7-9f82-a910e4f5f421",
+              "name": "targetName",
+              "value": "Dave McKay",
+              "type": "string"
+            },
+            {
+              "id": "b01f372e-805e-4b3b-8efa-6123d6729107",
+              "name": "targetCompany",
+              "value": "RBC",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        280,
+        40
+      ],
+      "id": "4d7d6d6c-8f16-4113-9027-a9907f452bd8",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "8d2b0fe9-7bf3-4967-af25-2759a37a58e4",
+              "name": "linkedInUrl",
+              "value": "={{ $json.organic[0].link }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        700,
+        -100
+      ],
+      "id": "ec68d6fb-f3a0-4e6e-87f2-103523492b30",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        960,
+        360
+      ],
+      "id": "ac2596ee-e3d8-473b-81ba-825be31c6a9d",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "muldXLite6ocPV8W",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "39317b64-0305-4cdd-b5a2-209b7e0c10d7",
+              "name": "targetFullName",
+              "value": "={{ $json.full_name }}",
+              "type": "string"
+            },
+            {
+              "id": "ea0342b5-a93a-465f-b2f6-7a87c93abb0f",
+              "name": "targetSummary",
+              "value": "={{ $json.summary }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1140,
+        -100
+      ],
+      "id": "ee9b495f-b897-4152-ad48-ff767a4d02bd",
+      "name": "Edit Fields2"
+    },
+    {
+      "parameters": {
+        "authentication": "serviceAccount",
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "19QFWaMqlLkllCBEdK1B5sa2lQRyyBoZ9jpPJbBUPsoQ",
+          "mode": "id"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/19QFWaMqlLkllCBEdK1B5sa2lQRyyBoZ9jpPJbBUPsoQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Date": "={{ $now.toISODate() }}",
+            "Name": "= {{ $('SCRAPE PROFILE').item.json.full_name }}",
+            "LinkedIn URL": "={{ $('FINDURL').item.json.organic[0].link }}\n",
+            "Generated Message": "={{ $json.text }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Date",
+              "displayName": "Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Name",
+              "displayName": "Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn URL",
+              "displayName": "LinkedIn URL",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Generated Message",
+              "displayName": "Generated Message",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        1180,
+        120
+      ],
+      "id": "84fe8653-dd30-4d8a-9c5a-ce75069509a1",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleApi": {
+          "id": "FfMGyKkEjtBrdkUd",
+          "name": "Google Service Account account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://google.serper.dev/search",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-KEY",
+              "value": "27972b27c31fc8a5fb4d3d57c9fc5df7f1e61090"
+            }
+          ]
+        },
+        "sendBody": true,
+        "bodyParameters": {
+          "parameters": [
+            {
+              "name": "q",
+              "value": "=LinkedIn profile for {{ $json.targetName }} {{ $json.targetCompany }}"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        500,
+        100
+      ],
+      "id": "14dc2d0c-0397-4fd8-9544-f93cecc8739d",
+      "name": "FINDURL"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=**Persona:** You are an expert career strategist with a mastery of executive communication, writing on behalf of Gabriel Onwache. Gabriel is a talented software developer with a passion for building intelligent automation systems using tools like n8n and Google Vertex AI.\n\n**Target Dossier:**\n- Name: {{ $json.targetFullName }}\n- Profile Summary: {{ $json.targetSummary }}\n\n**Mission:**\nAnalyze the target's Profile Summary to identify a core theme, accomplishment, or turn of phrase that relates to transformation, innovation, or efficiency. Then, write a highly concise (under 300 characters) and compelling LinkedIn connection request that does the following:\n1. Greets the target warmly by their first name.\n2. References the specific theme you identified in their summary.\n3. Briefly and elegantly connects Gabriel's passion for AI-driven automation to that theme.\n4. Concludes with a simple, forward-looking statement.\n5. The tone must be one of peer-level respect, not a subordinate asking for a job. It should be authentic and non-generic.\n\nDraft the connection request below.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        820,
+        120
+      ],
+      "id": "cd6c5c16-7843-4292-87b8-155923c3915b",
+      "name": " GENERATE MESSAGE"
+    },
+    {
+      "parameters": {
+        "url": "https://nubela.co/proxycurl/api/v2/linkedin",
+        "sendQuery": true,
+        "queryParameters": {
+          "parameters": [
+            {
+              "name": "url",
+              "value": "={{ $json.linkedInUrl }}"
+            }
+          ]
+        },
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "Authorization",
+              "value": "nzmYnjpzqFVyPsYYEsARsg"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        920,
+        -100
+      ],
+      "id": "569ead99-1a3c-4d94-bbd2-8ea2f8e7619d",
+      "name": "SCRAPE PROFILE"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "FINDURL",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "SCRAPE PROFILE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": " GENERATE MESSAGE",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields2": {
+      "main": [
+        [
+          {
+            "node": " GENERATE MESSAGE",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "FINDURL": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    " GENERATE MESSAGE": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "SCRAPE PROFILE": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "4671695d-2d53-4afe-838b-f90b1324c24d",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "01ff9519183080c8ca11e2f53a26a9bb8d6db974040ea61b5433dbf5d783bedf"
+  },
+  "id": "dGhKnveVKV4FOiMn",
+  "tags": []
+}

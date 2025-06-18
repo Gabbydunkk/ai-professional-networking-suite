@@ -1,0 +1,121 @@
+{
+  "name": "LINKEDIN FARMER V1.0",
+  "nodes": [
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.manualTrigger",
+      "typeVersion": 1,
+      "position": [
+        0,
+        0
+      ],
+      "id": "ced38443-8dbb-425f-8dde-425d146fa6f7",
+      "name": "When clicking ‘Execute workflow’"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "4dd81f22-f5a4-4525-a3ad-0b8c4cf0fbc1",
+              "name": "postTopic",
+              "value": "The power of using AI to automate professional networking.",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        220,
+        0
+      ],
+      "id": "b96dd9bd-1c6f-4a06-8fe2-de5c149d5f76",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=**Persona:** You are an expert LinkedIn content strategist and ghostwriter, specializing in technology and AI. You write for Gabriel Onwache, a skilled automation developer.\n\n**Topic:** {{ $json.postTopic }}\n\n**Mission:**\nWrite an engaging and insightful LinkedIn post based on the provided topic. The post must:\n1.  Start with a strong, attention-grabbing hook.\n2.  Explain the concept clearly in the body.\n3.  End with a thought-provoking question to encourage comments.\n4.  Include 3-5 relevant and popular hashtags (like #AI, #Automation, #FutureOfWork, #n8n, #LinkedIn).\n5.  The tone should be professional, confident, and passionate.\n\nDraft the post below.",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.7,
+      "position": [
+        500,
+        20
+      ],
+      "id": "13b4db63-0a3c-4ade-9013-e719325d956c",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-1.5-flash-latest",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        880,
+        0
+      ],
+      "id": "fba1e683-2e48-48ce-be28-de95d2062c96",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "muldXLite6ocPV8W",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "When clicking ‘Execute workflow’": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "14b0c9ac-9042-4e10-b3d6-a3c49d712ea5",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "01ff9519183080c8ca11e2f53a26a9bb8d6db974040ea61b5433dbf5d783bedf"
+  },
+  "id": "BWDC5lfJ4Q8RzniD",
+  "tags": []
+}
